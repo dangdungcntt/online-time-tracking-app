@@ -2,6 +2,7 @@ const API_KEY = localStorage.getItem("API_KEY");
 const SELECTED_DEVICE_ID = localStorage.getItem("SELECTED_DEVICE_ID");
 const APP_URL =
     process.env.API_URL || "https://online-time-tracking.nddapp.com";
+const RECORD_INTERVAL = process.env.RECORD_INTERVAL || 60;
 
 const axios = require("axios");
 const Api = axios.create({
@@ -54,7 +55,7 @@ const app = new Vue({
                 this.record();
                 this.timerInterval = setInterval(() => {
                     this.record();
-                }, 5000);
+                }, RECORD_INTERVAL * 1000);
             } else {
                 clearInterval(this.timerInterval);
             }

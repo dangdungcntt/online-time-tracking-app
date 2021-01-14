@@ -1,9 +1,9 @@
 require("dotenv").config();
+require("update-electron-app")();
 
 const { app, BrowserWindow, Menu, Tray } = require("electron");
 const path = require("path");
-const isProduction =
-    !process.env.APP_ENV || process.env.APP_ENV == "production";
+const isDev = require("electron-is-dev");
 let mainWindow = null;
 let quiting = false;
 
@@ -12,6 +12,19 @@ if (require("electron-squirrel-startup")) {
     // eslint-disable-line global-require
     app.quit();
 }
+
+if (!app.requestSingleInstanceLock()) {
+    app.quit();
+    return;
+}
+
+app.on("second-instance", (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+        mainWindow.show();
+        mainWindow.focus();
+    }
+});
 
 const createWindow = () => {
     // Create the browser window.
@@ -22,7 +35,7 @@ const createWindow = () => {
         webPreferences: {
             contextIsolation: false,
             nodeIntegration: true,
-            devTools: !isProduction,
+            devTools: isDev,
         },
     });
 
